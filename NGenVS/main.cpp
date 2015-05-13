@@ -43,6 +43,7 @@
 //#include "MeshSwapState.h"
 //#include "MeshSpringState.h"
 #include "CharacterController.h"
+#include "RunnerController.h"
 
 #include "LinkedList.h"
 #include "DynamicArray.h"
@@ -126,7 +127,8 @@ void InitializeScene(void)
 
 	//Attach character controller state
 	State* state = State_Allocate();
-	State_CharacterController_Initialize(state, 0.01f, 0.005f, 5.0f, 1.0f);
+	//State_CharacterController_Initialize(state, 0.01f, 0.005f, 5.0f, 1.0f);
+	State_RunnerController_Initialize(state, 0.01f, 5.0f, 0.005f, 1.0f);
 	GObject_AddState(cam, state);
 
 	ObjectManager_AddObject(cam);

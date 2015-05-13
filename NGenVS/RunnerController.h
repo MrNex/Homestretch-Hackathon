@@ -1,0 +1,48 @@
+#ifndef RUNNERCONTROLLER_H
+#define RUNNERCONTROLLER_H
+
+#include "State.h"
+
+///
+//Initializes a runner controller state
+//
+//Parameters:
+//	state: A pointer to the state to initialize as a runner controller
+//	acceleration: The acceleration of the runner
+//	maxvelocity: The max speed of the runner
+//	angularVelocity: the angular velocity of the runner
+//	jumpMag: The magnitude of the impulse which will be applied when the player jumps
+void State_RunnerController_Initialize(State* state, const float acceleration, const float maxVelocity, const float angularVelocity, const float jumpMag);
+
+///
+//Frees members in a runner controller state
+//
+//Parameters:
+//	state: A pointer to the state to free the members of
+void State_RunnerController_Free(State* state);
+
+
+///
+//Updates the object attached to a runner controller
+//This object will always accelerate forward while on a surface unless the velocity is already at the max velocity.
+//
+//Parameters:
+//	obj: A pointer to the gameobject to update as a runner
+//	state: A pointer to the runner controller state
+void State_RunnerController_Update(GObject* obj, State* state);
+
+///
+//Accelerates the runner controller
+//
+//PArameters:
+//	obj: A pointer to the game object to accelerate
+//	state: A pointer to rhe runner controller state which is accelerating this object
+void State_RunnerController_Accelerate(GObject* obj, State* state);
+
+///
+//Rotates the runner controller
+//	obj: A pointer to the game object to rotate
+//	state: A pointer to the runner controller rotating the object
+void State_RunnerController_Rotate(GObject* obj, State* state);
+
+#endif

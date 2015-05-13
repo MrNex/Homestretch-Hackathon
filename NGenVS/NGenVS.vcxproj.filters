@@ -216,6 +216,9 @@
     <ClCompile Include="ForceState.cpp">
       <Filter>Source Files\State</Filter>
     </ClCompile>
+    <ClCompile Include="RunnerController.cpp">
+      <Filter>Source Files\State</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Matrix.h">
@@ -351,6 +354,9 @@
       <Filter>Header Files\State</Filter>
     </ClInclude>
     <ClInclude Include="ForceState.h">
+      <Filter>Header Files\State</Filter>
+    </ClInclude>
+    <ClInclude Include="RunnerController.h">
       <Filter>Header Files\State</Filter>
     </ClInclude>
   </ItemGroup>
