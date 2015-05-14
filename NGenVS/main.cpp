@@ -129,15 +129,19 @@ void InitializeScene(void)
 	//Attach character controller state
 	State* state = State_Allocate();
 	//State_CharacterController_Initialize(state, 0.01f, 0.005f, 5.0f, 1.0f);
-	State_RunnerController_Initialize(state, 3.0f, 30.0f, 0.005f, 6.0f);
+	State_RunnerController_Initialize(state, 30.0f, 30.0f, 0.005f, 6.0f);
 	GObject_AddState(cam, state);
 
 	ObjectManager_AddObject(cam);
 
-	//Create floor
-	AddPlatform(0.0f, -10.0f, 0.0f, 100.0f, 1.0f, 300.0f);
-	AddPlatform(0.0f, -5.0f, -300.0f, 100.0f, 1.0f, 30.0f);
+	//Create floor - preferably in order of appearance
+	AddPlatform(0.0f, -10.0f, 0.0f, 10.0f, 1.0f, 300.0f);
 	AddPlatform(-5.0f, 5.0f, -200.0f, 10.0f, 10.0f, 30.0f);
+	AddPlatform(0.0f, -5.0f, -300.0f, 100.0f, 1.0f, 30.0f);
+	//for(int i = 0; i < 30)
+	//{
+		//AddPlatform(-3, 0, 
+	//}
 	
 	//AddPlatform();
 	//AddPlatform(45.0f, -5.0f, 0.0f, 10.0f, 0.1f, 50.0f);
