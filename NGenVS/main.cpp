@@ -129,19 +129,33 @@ void InitializeScene(void)
 	//Attach character controller state
 	State* state = State_Allocate();
 	//State_CharacterController_Initialize(state, 0.01f, 0.005f, 5.0f, 1.0f);
-	State_RunnerController_Initialize(state, 30.0f, 30.0f, 0.005f, 6.0f);
+	State_RunnerController_Initialize(state, 60.0f, 33.0f, 0.005f, 6.0f);
 	GObject_AddState(cam, state);
 
 	ObjectManager_AddObject(cam);
 
 	//Create floor - preferably in order of appearance
 	AddPlatform(0.0f, -10.0f, 0.0f, 10.0f, 1.0f, 300.0f);
-	AddPlatform(-18.0f, 5.0f, -200.0f, 10.0f, 10.0f, 30.0f);
-	AddPlatform(0.0f, -5.0f, -300.0f, 100.0f, 1.0f, 30.0f);
-	//for(int i = 0; i < 30)
-	//{
-		//AddPlatform(-3, 0, 
-	//}
+	AddPlatform(0.0f, -5.0f, -390.0f, 100.0f, 1.0f, 30.0f);
+	AddPlatform(0.0f, 5.0f, -480.0f, 10.0f, 10.0f, 30.0f);
+
+	//tunnel
+	AddPlatform(0.0f, 20.0f, -540.0f, 20.0f, 3.0f, 30.0f);
+	AddPlatform(-15.0f, 40.0f, -540.0f, 3.0f, 20.0f, 30.0f);
+	AddPlatform(15.0f, 40.0f, -540.0f, 3.0f, 20.0f, 30.0f);
+	
+	//flip walls
+	AddPlatform(0.0f, 40.0f, -590.0f, 20.0f, 20.0f, 3.0f);
+	AddPlatform(0.0f, 90.0f, -560.0f, 20.0f, 20.0f, 3.0f);
+
+	for(int i = 0; i < 30; i++)
+	{
+		AddPlatform(-10, -7, -i*10, 0.3, 3, 0.3);
+	}
+	for(int i = 0; i < 30; i++)
+	{
+		AddPlatform(10, -7, -i*10, 0.3, 3, 0.3);
+	}
 	
 	//AddPlatform();
 	//AddPlatform(45.0f, -5.0f, 0.0f, 10.0f, 0.1f, 50.0f);
