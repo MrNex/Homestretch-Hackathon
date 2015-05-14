@@ -146,10 +146,14 @@ void InitializeScene(void)
 	
 	//flip walls
 	AddPlatform(0.0f, 40.0f, -640.0f, 20.0f, 20.0f, 3.0f);
-	AddPlatform(0.0f, 100.0f, -590.0f, 20.0f, 20.0f, 3.0f);
+	AddPlatform(0.0f, 90.0f, -600.0f, 20.0f, 20.0f, 3.0f);
 
 	//second level floor running backwards
-	//AddPlatform(0.0f, 
+	AddPlatform(0.0, 100, -500, 30, 3, 90);
+
+	//horizontal walls
+	AddPlatform(-10.0f, 120.0f, -360.0f, 3.0f, 20.0f, 30.0f);
+	AddPlatform(10.0f, 120.0f, -270.0f, 3.0f, 20.0f, 30.0f);
 
 	for(int i = 0; i < 30; i++)
 	{
