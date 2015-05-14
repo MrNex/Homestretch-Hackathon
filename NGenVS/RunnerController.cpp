@@ -392,6 +392,10 @@ void State_RunnerController_Wallrun(GObject* obj, State* state)
 		Vector_INIT_ON_STACK(antiGravity, 3);
 		antiGravity.components[1] = 9.81f;
 		RigidBody_ApplyForce(obj->body, &antiGravity, &Vector_ZERO);
+
+		State_RunnerController_Accelerate(obj, state);
+
+
 	}
 	else if(members->verticalRunning == 1)
 	{
@@ -408,9 +412,13 @@ void State_RunnerController_Wallrun(GObject* obj, State* state)
 		Vector_Scale(&antiGravity, 9.81);
 		RigidBody_ApplyForce(obj->body, &antiGravity, &Vector_ZERO);
 
-		Vector_Copy(&antiGravity, &Vector_E2);
-		Vector_Scale(&antiGravity, members->acceleration);
-		RigidBody_ApplyForce(obj->body, &antiGravity, &Vector_ZERO);
+		//If we aren't jumping too fast yet
+		if(Vector_DotProduct(obj->body->velocity, &Vector_E2) < members->maxVelocity)
+		{
+			Vector_Copy(&antiGravity, &Vector_E2);
+			Vector_Scale(&antiGravity, members->acceleration);
+			RigidBody_ApplyForce(obj->body, &antiGravity, &Vector_ZERO);
+		}
 	}
 }
 
@@ -426,16 +434,8 @@ void State_RunnerController_WallJump(GObject* obj, State* state)
 	Vector impulse;
 	Vector_INIT_ON_STACK(impulse, 3);
 
-	/*
-	Vector_Copy(&impulse, &Vector_E2);
-	Vector_Scale(&impulse, members->jumpMag);
-
-	RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
-	*/
-
-
 	Vector_Copy(&impulse, members->wallNormal);
-	Vector_Scale(&impulse, members->jumpMag * 10);
+	Vector_Scale(&impulse, members->jumpMag);
 
 	RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
 }
