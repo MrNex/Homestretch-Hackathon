@@ -69,4 +69,10 @@ void State_RunnerController_Wallrun(GObject* obj, State* state);
 //	state: A pointer to the runner controller state which is allowing the object to wall jump
 void State_RunnerController_WallJump(GObject* obj, State* state);
 
+///
+//Lets the runner vault off of a wall
+//	obj: A pointer to the object
+//	state: A pointer to the runner controller state which is allowing the object to wall vault
+void State_RunnerController_WallVault(GObject* obj, State* state);
+
 #endif

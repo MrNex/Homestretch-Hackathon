@@ -72,6 +72,43 @@ void State_RunnerController_Free(State* state)
 }
 
 
+static unsigned char State_RunnerController_IsOnGround(GObject* obj, State* state)
+{
+	//Check if the object is on the ground...
+	unsigned char onGround = 0;
+
+	//Loop through all current collisions
+	LinkedList_Node* current = obj->collider->currentCollisions->head;
+	Collision* currentCollision = NULL;
+	while(current != NULL)
+	{
+		currentCollision = (Collision*)current->data;
+		//Determine if this obj is obj1 or obj2
+		if(obj == currentCollision->obj1)
+		{
+			//Make sure collision normal is pointing up
+			if(currentCollision->minimumTranslationVector->components[1] == 1.0f)
+			{
+				onGround = 1;
+				break;
+			}
+		}
+		else
+		{
+			//Make sure collision normal is pointing down
+			if(currentCollision->minimumTranslationVector->components[1] == -1.0f)
+			{
+				onGround = 1;
+				break;
+			}
+		}
+
+		current = current->next;
+	}
+
+	return onGround;
+}
+
 ///
 //Updates the object attached to a runner controller
 //This object will always accelerate forward while on a surface unless the velocity is already at the max velocity.
@@ -82,8 +119,6 @@ void State_RunnerController_Free(State* state)
 void State_RunnerController_Update(GObject* obj, State* state)
 {
 	struct State_RunnerController_Members* members = (struct State_RunnerController_Members*)state->members;
-
-	State_RunnerController_Accelerate(obj, state);
 
 	//If the object is colliding with something, allow it to possibly wall run
 	if(obj->collider->currentCollisions->size > 0)
@@ -100,8 +135,18 @@ void State_RunnerController_Update(GObject* obj, State* state)
 			{
 				members->spinningTimer = 0.0f;
 			}
+
+			State_RunnerController_WallJump(obj, state);
+
 			members->verticalRunning = members->horizontalRunning = 0;
 
+		}
+		else
+		{
+			if(State_RunnerController_IsOnGround(obj, state))
+			{
+				State_RunnerController_Accelerate(obj, state);
+			}
 		}
 
 
@@ -114,6 +159,13 @@ void State_RunnerController_Update(GObject* obj, State* state)
 	}
 	else if(members->verticalRunning || members->horizontalRunning)
 	{
+
+		//Wall vault
+		if(members->verticalRunning)
+		{
+			State_RunnerController_WallVault(obj, state);
+		}
+
 		members->verticalRunning = members->horizontalRunning = 0;
 
 	}
@@ -137,6 +189,8 @@ void State_RunnerController_Update(GObject* obj, State* state)
 	// Set position of Camera to the body
 	Camera_SetPosition(cam, obj->body->frame->position);
 }
+
+
 
 ///
 //Accelerates the runner controller
@@ -249,40 +303,9 @@ void State_RunnerController_Rotate(GObject* obj, State* state)
 //	state: A pointer to the runner controller state which is jumping the object
 void State_RunnerController_Jump(GObject* obj, State* state)
 {
-	//Check if the object is on the ground...
-	unsigned char onGround = 0;
-
-	//Loop through all current collisions
-	LinkedList_Node* current = obj->collider->currentCollisions->head;
-	Collision* currentCollision = NULL;
-	while(current != NULL)
-	{
-		currentCollision = (Collision*)current->data;
-		//Determine if this obj is obj1 or obj2
-		if(obj == currentCollision->obj1)
-		{
-			//Make sure collision normal is pointing up
-			if(currentCollision->minimumTranslationVector->components[1] == 1.0f)
-			{
-				onGround = 1;
-				break;
-			}
-		}
-		else
-		{
-			//Make sure collision normal is pointing down
-			if(currentCollision->minimumTranslationVector->components[1] == -1.0f)
-			{
-				onGround = 1;
-				break;
-			}
-		}
-
-		current = current->next;
-	}
 
 	//If the object is allowed to jump
-	if(onGround)
+	if(State_RunnerController_IsOnGround(obj, state))
 	{
 		//Grab the state members
 		struct State_RunnerController_Members* members = (struct State_RunnerController_Members*)state->members;
@@ -321,7 +344,7 @@ void State_RunnerController_Wallrun(GObject* obj, State* state)
 			//Save the normal
 			Vector_Copy(members->wallNormal, first->minimumTranslationVector);
 
-			if(first->obj1 == obj)
+			if(first->obj1 != obj)
 			{
 				Vector_Scale(members->wallNormal, -1.0f);
 			}
@@ -403,8 +426,35 @@ void State_RunnerController_WallJump(GObject* obj, State* state)
 	Vector impulse;
 	Vector_INIT_ON_STACK(impulse, 3);
 
+	/*
 	Vector_Copy(&impulse, &Vector_E2);
-	Vector_Scale(&impulse, members->jumpMag / 10.0f);
+	Vector_Scale(&impulse, members->jumpMag);
+
+	RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
+	*/
+
+
+	Vector_Copy(&impulse, members->wallNormal);
+	Vector_Scale(&impulse, members->jumpMag * 10);
+
+	RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
+}
+
+
+///
+//Lets the runner vault off of a wall
+//	obj: A pointer to the object
+//	state: A pointer to the runner controller state which is allowing the object to wall vault
+void State_RunnerController_WallVault(GObject* obj, State* state)
+{
+	//Get the members of this state
+	struct State_RunnerController_Members* members = (struct State_RunnerController_Members*)state->members;
+
+	Vector impulse;
+	Vector_INIT_ON_STACK(impulse, 3);
+
+	Vector_Copy(&impulse, members->wallNormal);
+	Vector_Scale(&impulse, -members->jumpMag * 7.0f);
 
 	RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
 }
