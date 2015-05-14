@@ -140,13 +140,16 @@ void InitializeScene(void)
 	AddPlatform(0.0f, 5.0f, -480.0f, 10.0f, 10.0f, 30.0f);
 
 	//tunnel
-	AddPlatform(0.0f, 20.0f, -540.0f, 20.0f, 3.0f, 30.0f);
-	AddPlatform(-15.0f, 40.0f, -540.0f, 3.0f, 20.0f, 30.0f);
-	AddPlatform(15.0f, 40.0f, -540.0f, 3.0f, 20.0f, 30.0f);
+	AddPlatform(0.0f, 20.0f, -590.0f, 20.0f, 3.0f, 30.0f);
+	AddPlatform(-15.0f, 40.0f, -590.0f, 3.0f, 20.0f, 30.0f);
+	AddPlatform(15.0f, 40.0f, -590.0f, 3.0f, 20.0f, 30.0f);
 	
 	//flip walls
-	AddPlatform(0.0f, 40.0f, -590.0f, 20.0f, 20.0f, 3.0f);
-	AddPlatform(0.0f, 90.0f, -560.0f, 20.0f, 20.0f, 3.0f);
+	AddPlatform(0.0f, 40.0f, -640.0f, 20.0f, 20.0f, 3.0f);
+	AddPlatform(0.0f, 100.0f, -590.0f, 20.0f, 20.0f, 3.0f);
+
+	//second level floor running backwards
+	//AddPlatform(0.0f, 
 
 	for(int i = 0; i < 30; i++)
 	{
