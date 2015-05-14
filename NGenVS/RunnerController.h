@@ -45,4 +45,12 @@ void State_RunnerController_Accelerate(GObject* obj, State* state);
 //	state: A pointer to the runner controller rotating the object
 void State_RunnerController_Rotate(GObject* obj, State* state);
 
+///
+//Allows the runner controller to jump if necessary conditions are met
+//
+//Parameters:
+//	obj: A pointer to the object jumping
+//	state: A pointer to the runner controller state which is jumping the object
+void State_RunnerController_Jump(GObject* obj, State* state);
+
 #endif

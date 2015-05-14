@@ -1,8 +1,12 @@
 #include "RunnerController.h"
 
 #include <stdlib.h>
+#include <math.h>
+#include <stdio.h>
 
 #include "RenderingManager.h"
+#include "InputManager.h"
+#include "CollisionManager.h"
 
 #include "GObject.h"
 
@@ -62,6 +66,12 @@ void State_RunnerController_Update(GObject* obj, State* state)
 	if(obj->collider->currentCollisions->size > 0)
 	{
 		State_RunnerController_Accelerate(obj, state);
+
+		//If the user is pressing LMB
+		if(InputManager_IsMouseButtonPressed(0))
+		{
+			State_RunnerController_Jump(obj, state);
+		}
 	}
 
 	//Rotate runner
@@ -107,10 +117,14 @@ void State_RunnerController_Accelerate(GObject* obj, State* state)
 
 
 	//Only apply the impulse if the velocity is less than the max speed
-	if(Vector_GetMag(obj->body->velocity) < members->maxVelocity)
+	if(Vector_GetMag(obj->body->velocity) - fabs(Vector_DotProduct(obj->body->velocity, &Vector_E2)) < members->maxVelocity)
 	{
 		//Apply the impulse
 		RigidBody_ApplyImpulse(obj->body, &forward, &Vector_ZERO);
+	}
+	else
+	{
+		printf("Value:\t%f\n", Vector_GetMag(obj->body->velocity) - fabs(Vector_DotProduct(obj->body->velocity, &Vector_E2)));
 	}
 }
 
@@ -120,5 +134,111 @@ void State_RunnerController_Accelerate(GObject* obj, State* state)
 //	state: A pointer to the runner controller rotating the object
 void State_RunnerController_Rotate(GObject* obj, State* state)
 {
+	// create a camera object
+	Camera* cam = RenderingManager_GetRenderingBuffer()->camera;
 
+	//Grab the state members
+	struct State_RunnerController_Members* members = (struct State_RunnerController_Members*)state->members;
+
+	// if player's mouse is locked
+	if(InputManager_GetInputBuffer().mouseLock)
+	{
+
+		int deltaMouseX = (InputManager_GetInputBuffer().mousePosition[0] - InputManager_GetInputBuffer().previousMousePosition[0]);
+		int deltaMouseY = (InputManager_GetInputBuffer().mousePosition[1] - InputManager_GetInputBuffer().previousMousePosition[1]);
+
+		Vector* axis = Vector_Allocate();
+		Vector_Initialize(axis,3);
+
+		if(deltaMouseX != 0)
+		{
+			axis->components[1] = 1.0f;
+			// rotate the camera
+			Camera_ChangeYaw(cam, members->angularVelocity * deltaMouseX);
+			axis->components[1] = 0.0f;
+		}
+
+		if (deltaMouseY != 0)
+		{
+			Vector forwardVector;
+			Vector_INIT_ON_STACK(forwardVector, 3);
+			Matrix_SliceRow(&forwardVector, cam->rotationMatrix, 2, 0, 3);
+
+			// Keep camera from overextending it's boundaries.
+			if (deltaMouseY > 0)
+			{
+				if (Vector_DotProduct(&forwardVector, &Vector_E2) < 0.7f)
+				{
+					axis->components[0] = 1.0f;
+					Camera_ChangePitch(cam, members->angularVelocity * deltaMouseY);
+					axis->components[0] = 0.0f;
+				}
+			}
+			else if (deltaMouseY < 0)
+			{
+				if (Vector_DotProduct(&forwardVector, &Vector_E2) > -0.7f)
+				{
+					axis->components[0] = 1.0f;
+					Camera_ChangePitch(cam, members->angularVelocity * deltaMouseY);
+					axis->components[0] = 0.0f;
+				}
+			}
+		}
+	}
+}
+
+///
+//Allows the runner controller to jump if necessary conditions are met
+//
+//Parameters:
+//	obj: A pointer to the object jumping
+//	state: A pointer to the runner controller state which is jumping the object
+void State_RunnerController_Jump(GObject* obj, State* state)
+{
+	//Check if the object is on the ground...
+	unsigned char onGround = 0;
+
+	//Loop through all current collisions
+	LinkedList_Node* current = obj->collider->currentCollisions->head;
+	Collision* currentCollision = NULL;
+	while(current != NULL)
+	{
+		currentCollision = (Collision*)current->data;
+		//Determine if this obj is obj1 or obj2
+		if(obj == currentCollision->obj1)
+		{
+			//Make sure collision normal is pointing up
+			if(currentCollision->minimumTranslationVector->components[1] == 1.0f)
+			{
+				onGround = 1;
+				break;
+			}
+		}
+		else
+		{
+			//Make sure collision normal is pointing down
+			if(currentCollision->minimumTranslationVector->components[1] == -1.0f)
+			{
+				onGround = 1;
+				break;
+			}
+		}
+
+		current = current->next;
+	}
+
+	//If the object is allowed to jump
+	if(onGround)
+	{
+		//Grab the state members
+		struct State_RunnerController_Members* members = (struct State_RunnerController_Members*)state->members;
+
+
+		Vector jumpImpulse;
+		Vector_INIT_ON_STACK(jumpImpulse, 3);
+
+		jumpImpulse.components[1] = members->jumpMag;
+
+		RigidBody_ApplyImpulse(obj->body, &jumpImpulse, &Vector_ZERO);
+	}
 }

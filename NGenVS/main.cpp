@@ -123,18 +123,22 @@ void InitializeScene(void)
 
 	cam->body = RigidBody_Allocate();
 	RigidBody_Initialize(cam->body, cam->frameOfReference, 1.0f);
-	cam->body->coefficientOfRestitution = 0.3f;
+	cam->body->coefficientOfRestitution = 0.0f;
+	cam->body->dynamicFriction = 0.1f;
 
 	//Attach character controller state
 	State* state = State_Allocate();
 	//State_CharacterController_Initialize(state, 0.01f, 0.005f, 5.0f, 1.0f);
-	State_RunnerController_Initialize(state, 0.01f, 5.0f, 0.005f, 1.0f);
+	State_RunnerController_Initialize(state, 0.001f, 15.0f, 0.005f, 5.0f);
 	GObject_AddState(cam, state);
 
 	ObjectManager_AddObject(cam);
 
 	//Create floor
 	AddPlatform(0.0f, -10.0f, 0.0f, 50.0f, 1.0f, 50.0f);
+
+	AddPlatform(45.0f, -5.0f, 0.0f, 10.0f, 0.1f, 50.0f);
+	AddPlatform(20.0f, 0.0f, 45.0f, 20.0f, 0.1f, 10.0f);
 
 	//Set gravity
 	Vector* gravity = Vector_Allocate();
