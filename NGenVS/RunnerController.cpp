@@ -7,6 +7,7 @@
 #include "RenderingManager.h"
 #include "InputManager.h"
 #include "CollisionManager.h"
+#include "TimeManager.h"
 
 #include "GObject.h"
 
@@ -16,8 +17,13 @@ struct State_RunnerController_Members
 	float maxVelocity;
 	float angularVelocity;
 	float jumpMag;
+
 	unsigned char verticalRunning;
 	unsigned char horizontalRunning;
+
+	float spinningTime;
+	float spinningTimer;
+
 	Vector* wallNormal;
 };
 
@@ -42,6 +48,9 @@ void State_RunnerController_Initialize(State* state, const float acceleration, c
 
 	members->verticalRunning = 0;
 	members->horizontalRunning = 0;
+
+	members->spinningTime = 3.14159f / spinningRate;
+	members->spinningTimer = members->spinningTime;
 
 	members->wallNormal = Vector_Allocate();
 	Vector_Initialize(members->wallNormal, 3);
@@ -86,7 +95,13 @@ void State_RunnerController_Update(GObject* obj, State* state)
 		}
 		else if(members->verticalRunning || members->horizontalRunning)
 		{
+			//Wall jump
+			if(members->verticalRunning)
+			{
+				members->spinningTimer = 0.0f;
+			}
 			members->verticalRunning = members->horizontalRunning = 0;
+
 		}
 
 
@@ -97,12 +112,27 @@ void State_RunnerController_Update(GObject* obj, State* state)
 		}
 
 	}
+	else if(members->verticalRunning || members->horizontalRunning)
+	{
+		members->verticalRunning = members->horizontalRunning = 0;
 
-	//Rotate runner
-	State_RunnerController_Rotate(obj, state);
+	}
 
-	//Grab the camera
+
 	Camera* cam = RenderingManager_GetRenderingBuffer()->camera;
+
+	if(members->spinningTimer < members->spinningTime)
+	{
+		float dt = TimeManager_GetDeltaSec();
+		members->spinningTimer += dt;
+		Camera_ChangeYaw(cam, spinningRate * dt);
+	}
+	else
+	{
+		//Rotate runner
+		State_RunnerController_Rotate(obj, state);
+	}
+	//Grab the camera
 
 	// Set position of Camera to the body
 	Camera_SetPosition(cam, obj->body->frame->position);
@@ -317,7 +347,7 @@ void State_RunnerController_Wallrun(GObject* obj, State* state)
 			//Get dot product of forward vector and collision normal
 			float dotProd = fabs(Vector_DotProduct(&forward, first->minimumTranslationVector));
 			//If the dot product is closer to 0 we are horizontal running, else we are vertical running
-			if(dotProd < 0.5)
+			if(dotProd < 0.75)
 			{
 				members->horizontalRunning = 1;
 			}
@@ -359,4 +389,22 @@ void State_RunnerController_Wallrun(GObject* obj, State* state)
 		Vector_Scale(&antiGravity, members->acceleration);
 		RigidBody_ApplyForce(obj->body, &antiGravity, &Vector_ZERO);
 	}
+}
+
+///
+//Lets the runner jump off of a wall
+//	obj: A pointer to the object
+//	state: A pointer to the runner controller state which is allowing the object to wall jump
+void State_RunnerController_WallJump(GObject* obj, State* state)
+{
+	//Get the members of this state
+	struct State_RunnerController_Members* members = (struct State_RunnerController_Members*)state->members;
+
+	Vector impulse;
+	Vector_INIT_ON_STACK(impulse, 3);
+
+	Vector_Copy(&impulse, &Vector_E2);
+	Vector_Scale(&impulse, members->jumpMag / 10.0f);
+
+	RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
 }

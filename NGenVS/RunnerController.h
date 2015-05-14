@@ -3,6 +3,8 @@
 
 #include "State.h"
 
+static const float spinningRate = 3.14159f * 5.0f;
+
 ///
 //Initializes a runner controller state
 //
@@ -60,5 +62,11 @@ void State_RunnerController_Jump(GObject* obj, State* state);
 //	obj: A pointer to the object which is running on walls
 //	state: A pointer to the runner controller state which is allowing the object to wallrun
 void State_RunnerController_Wallrun(GObject* obj, State* state);
+
+///
+//Lets the runner jump off of a wall
+//	obj: A pointer to the object
+//	state: A pointer to the runner controller state which is allowing the object to wall jump
+void State_RunnerController_WallJump(GObject* obj, State* state);
 
 #endif
