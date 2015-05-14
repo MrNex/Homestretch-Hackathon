@@ -28,7 +28,7 @@ void Camera_Initialize(Camera* cam)
 	cam->aspectY = 1.0f;
 
 	cam->nearPlane = 1.0f;
-	cam->farPlane = 150.0f;
+	cam->farPlane = 1000.0f;
 
 	cam->leftPlane = -1.0f;
 	cam->rightPlane = 1.0f;
