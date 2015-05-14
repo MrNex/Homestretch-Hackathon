@@ -455,7 +455,7 @@ int main(int argc, char* argv[])
 	glutInitContextProfile(GLUT_CORE_PROFILE);
 
 	//Window creation
-	int win = glutCreateWindow("NGenVS V3.8: Shooting Gallery");
+	int win = glutCreateWindow("NGenVS V3.8: Slip Flip Jump");
 
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK) { return -1; }
