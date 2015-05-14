@@ -152,8 +152,10 @@ void InitializeScene(void)
 	AddPlatform(0.0, 100, -500, 30, 3, 90);
 
 	//horizontal walls
-	AddPlatform(-10.0f, 120.0f, -360.0f, 3.0f, 20.0f, 30.0f);
-	AddPlatform(10.0f, 120.0f, -270.0f, 3.0f, 20.0f, 30.0f);
+	AddPlatform(-9.0f, 120.0f, -360.0f, 3.0f, 20.0f, 30.0f);
+	AddPlatform(9.0f, 120.0f, -300.0f, 3.0f, 20.0f, 30.0f);
+
+	AddPlatform(0.0f, 100.0f, -200.0f, 10.0f, 3.0f, 50.0f);
 
 	for(int i = 0; i < 30; i++)
 	{

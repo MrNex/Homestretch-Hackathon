@@ -435,8 +435,12 @@ void State_RunnerController_WallJump(GObject* obj, State* state)
 	Vector_INIT_ON_STACK(impulse, 3);
 
 	Vector_Copy(&impulse, members->wallNormal);
-	Vector_Scale(&impulse, members->jumpMag);
+	Vector_Scale(&impulse, members->jumpMag * 2);
 
+	RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
+
+	Vector_Copy(&impulse, &Vector_E2);
+	Vector_Scale(&impulse, members->jumpMag);
 	RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
 }
 
