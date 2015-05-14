@@ -393,6 +393,15 @@ void State_RunnerController_Wallrun(GObject* obj, State* state)
 		antiGravity.components[1] = 9.81f;
 		RigidBody_ApplyForce(obj->body, &antiGravity, &Vector_ZERO);
 
+		//Zero downward velocity
+		if(obj->body->velocity->components[1] < 0.0f)
+		{
+			Vector_Copy(&antiGravity, &Vector_ZERO);
+			antiGravity.components[1] = -obj->body->velocity->components[1];
+			RigidBody_ApplyImpulse(obj->body, &antiGravity, &Vector_ZERO);
+		}
+
+
 		State_RunnerController_Accelerate(obj, state);
 
 
