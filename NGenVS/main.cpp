@@ -124,7 +124,7 @@ void InitializeScene(void)
 	cam->body = RigidBody_Allocate();
 	RigidBody_Initialize(cam->body, cam->frameOfReference, 1.0f);
 	cam->body->coefficientOfRestitution = 0.0f;
-	cam->body->dynamicFriction = 0.1f;
+	cam->body->dynamicFriction = 0.5f;
 
 	//Attach character controller state
 	State* state = State_Allocate();
