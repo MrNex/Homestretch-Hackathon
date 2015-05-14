@@ -74,24 +74,22 @@ void State_RunnerController_Update(GObject* obj, State* state)
 {
 	struct State_RunnerController_Members* members = (struct State_RunnerController_Members*)state->members;
 
+	State_RunnerController_Accelerate(obj, state);
 
-	//If the object is colliding with something, allow it to accelerate
+	//If the object is colliding with something, allow it to possibly wall run
 	if(obj->collider->currentCollisions->size > 0)
 	{
 		//If the user is pressing RMB
 		if(InputManager_IsMouseButtonPressed(2))
 		{
-			printf("Wallrunnin\n");
 			State_RunnerController_Wallrun(obj, state);
 		}
 		else if(members->verticalRunning || members->horizontalRunning)
 		{
 			members->verticalRunning = members->horizontalRunning = 0;
 		}
-		else
-		{
-			State_RunnerController_Accelerate(obj, state);
-		}
+
+
 		//If the user is pressing LMB
 		if(InputManager_IsMouseButtonPressed(0))
 		{
@@ -146,7 +144,7 @@ void State_RunnerController_Accelerate(GObject* obj, State* state)
 	if(Vector_GetMag(obj->body->velocity) - fabs(Vector_DotProduct(obj->body->velocity, &Vector_E2)) < members->maxVelocity)
 	{
 		//Apply the impulse
-		RigidBody_ApplyImpulse(obj->body, &forward, &Vector_ZERO);
+		RigidBody_ApplyForce(obj->body, &forward, &Vector_ZERO);
 	}
 	else
 	{
@@ -293,6 +291,11 @@ void State_RunnerController_Wallrun(GObject* obj, State* state)
 			//Save the normal
 			Vector_Copy(members->wallNormal, first->minimumTranslationVector);
 
+			if(first->obj1 == obj)
+			{
+				Vector_Scale(members->wallNormal, -1.0f);
+			}
+
 			//Determine what kind of wallrun is occurring
 			//First get the forward vector of the camera
 			Camera* cam = RenderingManager_GetRenderingBuffer()->camera;
@@ -321,7 +324,7 @@ void State_RunnerController_Wallrun(GObject* obj, State* state)
 			else
 			{
 				members->verticalRunning = 1;
-				
+
 			}
 		}
 	}
@@ -329,6 +332,8 @@ void State_RunnerController_Wallrun(GObject* obj, State* state)
 	//If we are horizontal running
 	if(members->horizontalRunning == 1)
 	{
+		printf("Horizontal Wallrunnin\n");
+
 		//combat the force of gravity
 		Vector antiGravity;
 		Vector_INIT_ON_STACK(antiGravity, 3);
@@ -337,6 +342,21 @@ void State_RunnerController_Wallrun(GObject* obj, State* state)
 	}
 	else if(members->verticalRunning == 1)
 	{
+		printf("Vertical Wallrunnin\n");
 
+
+		//combat the force of gravity
+		Vector antiGravity;
+		Vector_INIT_ON_STACK(antiGravity, 3);
+		Vector_Copy(&antiGravity, &Vector_E2);
+
+
+		//go up!
+		Vector_Scale(&antiGravity, 9.81);
+		RigidBody_ApplyForce(obj->body, &antiGravity, &Vector_ZERO);
+
+		Vector_Copy(&antiGravity, &Vector_E2);
+		Vector_Scale(&antiGravity, members->acceleration);
+		RigidBody_ApplyForce(obj->body, &antiGravity, &Vector_ZERO);
 	}
 }
