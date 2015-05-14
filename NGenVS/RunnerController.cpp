@@ -459,8 +459,12 @@ void State_RunnerController_WallVault(GObject* obj, State* state)
 	float mag = obj->body->velocity->components[1];
 
 	Vector_Scale(&impulse, -mag * 1.0f);
+	RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
 
-		RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
+	Vector_Copy(&impulse, &Vector_E2);
+	obj->body->velocity->components[1] = 0;
 
+	Vector_Scale(&impulse, members->jumpMag);
+	RigidBody_ApplyImpulse(obj->body, &impulse, &Vector_ZERO);
 
 }
