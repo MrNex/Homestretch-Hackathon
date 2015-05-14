@@ -136,7 +136,7 @@ void InitializeScene(void)
 
 	//Create floor - preferably in order of appearance
 	AddPlatform(0.0f, -10.0f, 0.0f, 10.0f, 1.0f, 300.0f);
-	AddPlatform(-5.0f, 5.0f, -200.0f, 10.0f, 10.0f, 30.0f);
+	AddPlatform(-18.0f, 5.0f, -200.0f, 10.0f, 10.0f, 30.0f);
 	AddPlatform(0.0f, -5.0f, -300.0f, 100.0f, 1.0f, 30.0f);
 	//for(int i = 0; i < 30)
 	//{
