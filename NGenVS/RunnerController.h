@@ -53,4 +53,12 @@ void State_RunnerController_Rotate(GObject* obj, State* state);
 //	state: A pointer to the runner controller state which is jumping the object
 void State_RunnerController_Jump(GObject* obj, State* state);
 
+///
+//Allows the runner controller to wallrun if necessary conditions are met
+//
+//Parameters:
+//	obj: A pointer to the object which is running on walls
+//	state: A pointer to the runner controller state which is allowing the object to wallrun
+void State_RunnerController_Wallrun(GObject* obj, State* state);
+
 #endif
